@@ -74,7 +74,7 @@ export function Revisions() {
   return (
     <div
       id="revisions"
-      className="col-span-full flex flex-col border-ink bg-paper text-[14px] leading-[1.3] sheet:col-span-3 sheet:border-l-[1.5px]"
+      className="col-span-full flex flex-col border-ink bg-paper text-[14px] leading-[1.3] sheet:col-span-3 max-sheet:border-t-[1.5px] sheet:border-l-[1.5px]"
     >
       <p className="k border-b border-ink px-4 py-3 text-ink">Revisions</p>
       <div className={`${ROW} border-b border-ink`}>
