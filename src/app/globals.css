@@ -168,6 +168,14 @@
    */
   .sheet-drop {
     animation: frame-hold 0.9s step-end backwards;
+    /*
+     * On screens wider than the sheet (1440px, plus the desk around it), the
+     * whole drawing is enlarged like a print at a bigger scale, instead of
+     * leaving wide empty margins. `tan(atan2(a, b))` is the unitless ratio
+     * a / b. The height term keeps the hero in view on short, very wide
+     * screens. Browsers that cannot resolve it keep the 1:1 sheet.
+     */
+    zoom: clamp(1, min(tan(atan2(100vw, 1500px)), tan(atan2(100vh, 680px))), 2);
   }
   .sheet-drop::after,
   .frame-trace::after {
