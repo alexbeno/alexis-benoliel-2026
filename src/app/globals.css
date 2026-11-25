@@ -1,26 +1,701 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-desk: #f0e9df;
+  --color-paper: #fbf4e9;
+  --color-ink: #1a1a1a;
+  --color-red: #c2402a;
+  --color-grey: #5f5d5a;
+  --color-rule: #cec8bf;
+
+  /* The sheet collapses to a single column at 900px and below. */
+  --breakpoint-sheet: 56.3125rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-mono: var(--font-plex-mono), monospace;
+  --font-display: var(--font-archivo), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* When the projection starts: right away, as the sheet comes down. */
+  --projection-start: 0.15s;
+
+  /*
+   * Easing curves sampled from a real damped spring (mass on a spring, from
+   * rest), so motion accelerates, overshoots and settles the way objects do.
+   * float: critically damped, no overshoot. soft: one faint overshoot.
+   * loose: under-damped, a few decaying swings.
+   */
+  --spring-float: linear(
+    0,
+    0.007,
+    0.0259,
+    0.0537,
+    0.0882,
+    0.1275,
+    0.1699,
+    0.2142,
+    0.2594,
+    0.3047,
+    0.3495,
+    0.3932,
+    0.4355,
+    0.4762,
+    0.5151,
+    0.552,
+    0.5868,
+    0.6196,
+    0.6504,
+    0.6791,
+    0.7059,
+    0.7308,
+    0.7538,
+    0.7752,
+    0.7949,
+    0.813,
+    0.8297,
+    0.8451,
+    0.8592,
+    0.8721,
+    0.8839,
+    0.8946,
+    0.9045,
+    0.9135,
+    0.9216,
+    0.9291,
+    0.9359,
+    0.942,
+    0.9476,
+    0.9527,
+    0.9573,
+    0.9615,
+    0.9652,
+    0.9687,
+    0.9718,
+    0.9746,
+    0.9771,
+    0.9794,
+    0.9814,
+    0.9833,
+    0.985,
+    0.9865,
+    0.9879,
+    0.9891,
+    0.9902,
+    0.9912,
+    1
+  );
+  --spring-soft: linear(
+    0,
+    0.0135,
+    0.0497,
+    0.1026,
+    0.1672,
+    0.2393,
+    0.3154,
+    0.3926,
+    0.4687,
+    0.5419,
+    0.611,
+    0.6751,
+    0.7337,
+    0.7863,
+    0.833,
+    0.8738,
+    0.9089,
+    0.9387,
+    0.9636,
+    0.984,
+    1.0004,
+    1.0132,
+    1.0228,
+    1.0297,
+    1.0344,
+    1.0371,
+    1.0383,
+    1.0382,
+    1.0372,
+    1.0354,
+    1.0331,
+    1.0304,
+    1.0275,
+    1.0246,
+    1.0216,
+    1.0188,
+    1.016,
+    1.0135,
+    1.0112,
+    1.009,
+    1.0071,
+    1.0055,
+    1.004,
+    1.0028,
+    1.0018,
+    1.0009,
+    1.0002,
+    0.9997,
+    0.9993,
+    0.999,
+    0.9987,
+    0.9986,
+    0.9985,
+    0.9985,
+    0.9986,
+    0.9986,
+    1
+  );
+  --spring-loose: linear(
+    0,
+    0.0395,
+    0.1433,
+    0.2894,
+    0.4575,
+    0.63,
+    0.7929,
+    0.9359,
+    1.0525,
+    1.1396,
+    1.1971,
+    1.227,
+    1.2332,
+    1.2203,
+    1.1936,
+    1.1579,
+    1.1181,
+    1.0781,
+    1.0408,
+    1.0086,
+    0.9828,
+    0.964,
+    0.9519,
+    0.9462,
+    0.9458,
+    0.9496,
+    0.9564,
+    0.965,
+    0.9744,
+    0.9837,
+    0.9922,
+    0.9994,
+    1.0051,
+    1.0092,
+    1.0116,
+    1.0127,
+    1.0125,
+    1.0115,
+    1.0098,
+    1.0077,
+    1.0055,
+    1.0034,
+    1.0014,
+    0.9998,
+    0.9986,
+    0.9977,
+    0.9972,
+    0.997,
+    0.9971,
+    0.9974,
+    0.9978,
+    0.9983,
+    0.9988,
+    0.9993,
+    0.9998,
+    1.0001,
+    1
+  );
+  --grid-major: rgba(26, 26, 26, 0.075);
+  --grid-minor: rgba(26, 26, 26, 0.035);
+}
+
+[data-theme="blueprint"] {
+  --color-desk: #0a1c2a;
+  --color-paper: #10293b;
+  --color-ink: #efe8da;
+  --color-red: #ff7a5c;
+  --color-grey: #a7b6c1;
+  --color-rule: #2d4b60;
+  --grid-major: rgba(239, 232, 218, 0.09);
+  --grid-minor: rgba(239, 232, 218, 0.04);
+}
+
+/* Registered as colours so the intro can animate them (see `.sketch`). */
+@property --color-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1a1a1a;
+}
+@property --color-red {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c2402a;
+}
+@property --color-grey {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #5f5d5a;
+}
+
+@layer base {
+  ::selection {
+    background: var(--color-red);
+    color: var(--color-paper);
+  }
+
+  a:hover {
+    color: var(--color-red);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Small mono caption used for every label on the drawing. */
+  .k {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-grey);
+  }
+
+  .grid-paper {
+    background-color: var(--color-paper);
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    background-size:
+      48px 48px,
+      48px 48px,
+      12px 12px,
+      12px 12px;
+  }
+
+  /* Section cutting-plane line (long dash, short dash). */
+  .cut {
+    height: 1.5px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--color-red) 0 24px,
+      transparent 24px 29px,
+      var(--color-red) 29px 33px,
+      transparent 33px 38px
+    );
+  }
+
+  .cur-on,
+  .cur-on * {
+    cursor: none !important;
+  }
+
+  /*
+   * The intro is driven by `data-intro` on the sheet root (see paper-drop.tsx):
+   * - pending: server render; the sheet is hidden until the script decides
+   * - webgl: the blank sheet is being laid down on the WebGL canvas, behind
+   *   the page, while the drawing is already being projected on top (part 2).
+   *   The real sheet's own paper is see-through so the canvas one shows.
+   * - project: the sheet has landed; the real paper takes over from the canvas
+   * - css: no WebGL, so the sheet is put down in CSS instead (part 1)
+   * - done: reduced motion, nothing plays
+   */
+  [data-intro="pending"] .sheet-drop {
+    /* Failsafe: if the script never runs, show the finished sheet regardless. */
+    animation: intro-failsafe 3s step-end backwards;
+  }
+  /* `!important` because these must beat the Tailwind utilities in place. */
+  [data-intro="webgl"] :is(.sheet-drop, .grid-paper) {
+    border-color: transparent !important;
+    background: none !important;
+  }
+  /* The script moves the sheet every frame here; a transition would lag it. */
+  [data-intro="webgl"] .sheet-drop {
+    transition: none !important;
+  }
+  [data-intro="webgl"],
+  [data-intro="project"] {
+    --projection-start: 0s;
+  }
+
+  /*
+   * Intro, part 1 (CSS fallback): the blank sheet is put down on the desk.
+   * Each axis is its own spring with its own weight, so they settle out of
+   * step: it sinks on its air cushion (no bounce), while the sideways drift
+   * and the twist swing a little past rest before dying out.
+   */
+  [data-intro="css"] .sheet-drop {
+    transform-origin: 50% 45vh;
+    animation:
+      drop-fall 1.1s var(--spring-float) backwards,
+      drop-drift 1.5s var(--spring-soft) backwards,
+      drop-twist 1.7s var(--spring-loose) backwards,
+      drop-in 0.3s ease-out backwards;
+  }
+
+  /*
+   * Intro, part 2: the drawing is projected onto the sheet. The lamp warms
+   * up, then the whole sheet is drawn as a pencil sketch: every colour token
+   * is swapped for graphite that darkens as it is worked, and every block is
+   * shaded in at once, each along its own diagonal with a soft edge. Then the
+   * final colours develop out of the graphite while the blueprint negative
+   * pulses softly over the sheet.
+   */
+  :is([data-intro="css"], [data-intro="webgl"], [data-intro="project"]) {
+    /* Zone markers along the sheet margin come on with the projection. */
+    .fade {
+      animation: fd 0.5s ease var(--projection-start) backwards;
+    }
+    .sketch {
+      animation:
+        sketch-tokens 1.9s linear var(--projection-start) backwards,
+        sketch-lamp 0.7s linear var(--projection-start) backwards;
+    }
+    .sketch header,
+    .sketch section > * {
+      animation: sketch-draw var(--sk-time, 1.7s)
+        cubic-bezier(0.5, 0.05, 0.25, 1)
+        calc(var(--projection-start) + var(--sk-delay, 0s)) backwards;
+    }
+    .sketch-flash {
+      animation: sketch-flash 1.1s ease-in-out
+        calc(var(--projection-start) + 1.15s) backwards;
+    }
+    .nm {
+      animation: sketch-name 1.9s linear var(--projection-start) backwards;
+    }
+  }
+  .sketch {
+    /* Re-resolve the inherited text colour here, so it follows the tokens. */
+    color: var(--color-ink);
+  }
+  .sketch header {
+    --sk-angle: 94deg;
+    --sk-time: 1.6s;
+  }
+  .sketch section > :first-child {
+    --sk-angle: 122deg;
+    --sk-time: 1.9s;
+    --sk-delay: 0.04s;
+  }
+  .sketch section > :last-child {
+    --sk-angle: 106deg;
+    --sk-time: 1.7s;
+    --sk-delay: 0.16s;
+  }
+  .sketch #parts > :first-child {
+    --sk-angle: 132deg;
+    --sk-time: 1.8s;
+    --sk-delay: 0.1s;
+  }
+  .sketch #contact > :last-child {
+    --sk-angle: 114deg;
+    --sk-delay: 0.08s;
+  }
+  .sketch-flash {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    opacity: 0;
+    backdrop-filter: invert(1) brightness(2.2) saturate(1.3);
+  }
+
+  /* Scroll reveal: `.in` is added by <SketchIntro> the first time it is seen. */
+  [data-r] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s),
+      transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s);
+  }
+  [data-r].in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero: guide lines and the name, outlined while the sheet is a sketch. */
+  .gd {
+    position: absolute;
+    left: -28px;
+    right: -12px;
+    height: 1px;
+    background: var(--color-red);
+    opacity: 0.4;
+  }
+  .nm {
+    display: block;
+    white-space: nowrap;
+    -webkit-text-stroke: 1.2px transparent;
+  }
+
+  /* Dovetail drawing. */
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.3s cubic-bezier(0.6, 0, 0.2, 1) 0.2s;
+  }
+  .in .draw {
+    stroke-dashoffset: 0;
+  }
+  .fillin {
+    opacity: 0;
+    transition: opacity 0.8s 0.9s;
+  }
+  .in .fillin {
+    opacity: 1;
+  }
+  .clack {
+    animation: clk 0.35s ease;
+  }
+  .dust {
+    animation: dst 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+
+  /* Revision rows. */
+  .rev {
+    transition: background 0.2s;
+  }
+  .rev:hover {
+    background: color-mix(in srgb, var(--color-red) 8%, transparent);
+  }
+  .rev:hover .rl {
+    color: var(--color-red);
+    font-weight: 500;
+  }
+
+  /* Parts list rows. */
+  tr.pt {
+    transition: background 0.2s;
+  }
+  tr.pt:hover {
+    background: color-mix(in srgb, var(--color-red) 6%, transparent);
+  }
+  .itm {
+    box-sizing: content-box;
+    display: inline-flex;
+    vertical-align: top;
+    margin-top: -2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid transparent;
+    transition: all 0.25s;
+  }
+  tr.pt:hover .itm {
+    border-color: var(--color-red);
+    background: var(--color-red);
+    color: var(--color-paper);
+    transform: rotate(-12deg) scale(1.1);
+  }
+
+  /* Underline that draws in on hover. */
+  .ul {
+    background: linear-gradient(var(--color-red), var(--color-red)) 0 100% / 0
+      1.5px no-repeat;
+    transition: background-size 0.3s;
+  }
+  .ul:hover {
+    background-size: 100% 1.5px;
+  }
+
+  .logo .rp {
+    transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .logo:hover .rp {
+    transform: translateX(5px);
+  }
+
+  .dot {
+    animation: pl 1.6s ease-in-out infinite;
+  }
+  .stamp {
+    animation: st 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  }
+
+  .btn {
+    transition:
+      transform 0.15s,
+      background 0.15s;
+  }
+  .btn:active {
+    transform: scale(0.96);
+  }
+
+  /* Note buttons: plain text with a dashed underline. */
+  .nb {
+    all: unset;
+    cursor: pointer;
+    border-bottom: 1px dashed var(--color-grey);
+  }
+  .nb:hover {
+    color: var(--color-red);
+    border-bottom-color: var(--color-red);
+  }
+}
+
+/*
+ * Graphite gets darker as the sketch is worked (0 to 1.2s), then the final
+ * colours develop out of it (1.2 to 1.9s), under the blueprint pulses.
+ */
+@keyframes sketch-tokens {
+  0% {
+    --color-ink: rgba(26, 26, 26, 0.24);
+    --color-red: rgba(26, 26, 26, 0.24);
+    --color-grey: rgba(26, 26, 26, 0.18);
+    animation-timing-function: ease-out;
+  }
+  63% {
+    --color-ink: rgba(26, 26, 26, 0.38);
+    --color-red: rgba(26, 26, 26, 0.38);
+    --color-grey: rgba(26, 26, 26, 0.28);
+    animation-timing-function: ease-in-out;
+  }
+}
+/* A diagonal mask slides off each block, from top left to bottom right. */
+@keyframes intro-failsafe {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes drop-fall {
+  from {
+    transform: perspective(1400px) translateY(-76px) rotateX(9deg) scale(1.1);
+    box-shadow: 0 90px 100px -30px rgba(26, 26, 26, 0.32);
+  }
+  to {
+    transform: perspective(1400px) translateY(0) rotateX(0deg) scale(1);
+    box-shadow: 0 0 0 0 rgba(26, 26, 26, 0);
+  }
+}
+@keyframes drop-drift {
+  from {
+    translate: -34px 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+@keyframes drop-twist {
+  from {
+    rotate: -3.2deg;
+  }
+  to {
+    rotate: 0deg;
+  }
+}
+@keyframes drop-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fd {
+  from {
+    opacity: 0;
+  }
+}
+/* The projector lamp warming up: it swells, sags once, then holds steady. */
+@keyframes sketch-lamp {
+  0% {
+    opacity: 0.4;
+    animation-timing-function: ease-out;
+  }
+  38% {
+    opacity: 0.85;
+    animation-timing-function: ease-in-out;
+  }
+  58% {
+    opacity: 0.6;
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes sketch-draw {
+  from {
+    mask: linear-gradient(var(--sk-angle, 110deg), #000 48%, transparent 53%)
+      100% 100% / 260% 260% no-repeat;
+  }
+  to {
+    mask: linear-gradient(var(--sk-angle, 110deg), #000 48%, transparent 53%) 0%
+      0% / 260% 260% no-repeat;
+  }
+}
+/* The name stays an outline while sketched, then fills as colours develop. */
+@keyframes sketch-name {
+  0%,
+  63% {
+    color: transparent;
+    -webkit-text-stroke-color: var(--color-ink);
+    animation-timing-function: ease-in-out;
+  }
+}
+/*
+ * Two soft pulses of the blueprint negative while the colours develop: a
+ * full one, then a fainter echo.
+ */
+@keyframes sketch-flash {
+  0%,
+  46%,
+  100% {
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.55;
+  }
+}
+@keyframes clk {
+  25% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+}
+@keyframes dst {
+  from {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy));
+    opacity: 0;
+  }
+}
+@keyframes pl {
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes st {
+  from {
+    transform: rotate(-14deg) scale(2.2);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-14deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  [data-r] {
+    opacity: 1;
+    transform: none;
+  }
+  .draw {
+    stroke-dashoffset: 0;
+  }
+  .fillin {
+    opacity: 1;
+  }
 }
