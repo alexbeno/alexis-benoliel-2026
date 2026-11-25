@@ -13,6 +13,8 @@ const MAX_PIXEL_RATIO = 2;
 /** Meshed past the bottom of the screen, so the cut is never seen. */
 const BELOW_FOLD = 320;
 const FADE_OUT_MS = 180;
+/** Same breakpoint as `sheet:` in globals.css: below it, the mobile layout. */
+const DESKTOP = "(min-width: 56.3125rem)";
 
 /**
  * Measures where the real sheet rests, so the WebGL one lands exactly on it.
@@ -57,6 +59,7 @@ function follow(sheet: HTMLElement, frame: PaperFrame) {
  * WebGL sheet is flat, then
  * takes over when `data-intro` switches on the sheet root (the states are
  * listed in globals.css). Without WebGL2 the CSS version of the drop plays.
+ * On mobile nothing is laid down: the sheet is there and only gets drawn on.
  */
 export function PaperDrop() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -79,6 +82,12 @@ export function PaperDrop() {
     ).matches;
     if (prefersReducedMotion) {
       sheetRoot.dataset.intro = "done";
+      return;
+    }
+    // On mobile the sheet is already in place: only the drawing is projected.
+    if (!window.matchMedia(DESKTOP).matches) {
+      stage.style.display = "none";
+      sheetRoot.dataset.intro = "project";
       return;
     }
     const gl = stage.getContext("webgl2", { antialias: true, alpha: true });

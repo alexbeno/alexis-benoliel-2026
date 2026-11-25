@@ -316,6 +316,7 @@
    *   the page, while the drawing is already being projected on top (part 2).
    *   The real sheet's own paper is see-through so the canvas one shows.
    * - project: the sheet has landed; the real paper takes over from the canvas
+   *   (also where mobile starts: no sheet animation there, only the drawing)
    * - css: no WebGL, so the sheet is put down in CSS instead (part 1)
    * - done: reduced motion, nothing plays
    */
