@@ -6,7 +6,7 @@ import { getRevealDelay } from "../_utils/reveal";
 const EMAIL = "alexbenoliel@gmail.com";
 const STAMP_DURATION_MS = 2400;
 const CELL = "border-b border-ink px-4 py-3";
-const LINK = "ul border-r border-ink px-4 py-[14px] font-semibold";
+const LINK = "ul border-r border-b border-ink px-4 py-[14px] font-semibold";
 
 export function TitleBlock() {
   const [isCopied, setIsCopied] = useState(false);
@@ -32,19 +32,19 @@ export function TitleBlock() {
       style={getRevealDelay(0.15)}
       className="relative col-span-full grid grid-cols-4 border-ink bg-paper text-[15px] sheet:col-span-7 sheet:border-l-[1.5px]"
     >
-      <div className={`${CELL} border-r`}>
+      <div className={`${CELL} border-r max-sheet:col-span-2`}>
         <span className="k block">Drawn by</span>A. Benoliel
       </div>
-      <div className={`${CELL} border-r`}>
+      <div className={`${CELL} max-sheet:col-span-2 sheet:border-r`}>
         <span className="k block">Location</span>Paris, FR
       </div>
-      <div className={`${CELL} border-r`}>
+      <div className={`${CELL} border-r max-sheet:col-span-2`}>
         <span className="k block">Scale · Sheet</span>1:1 · 1/1
       </div>
-      <div className={CELL}>
+      <div className={`${CELL} max-sheet:col-span-2`}>
         <span className="k block">Status</span>
-        <span className="inline-flex items-center gap-2 font-semibold text-red">
-          <span className="dot size-2 rounded-full bg-red" />
+        <span className="inline-flex items-center gap-2 font-semibold text-accent">
+          <span className="dot size-2 shrink-0 rounded-full bg-accent" />
           Open to work
         </span>
       </div>
@@ -53,7 +53,7 @@ export function TitleBlock() {
         <a
           href={`mailto:${EMAIL}`}
           data-label="SEND AN EMAIL"
-          className="font-serif text-[clamp(28px,3.4vw,46px)] leading-none [overflow-wrap:anywhere]"
+          className="font-display text-[clamp(24px,2.9vw,40px)] leading-none font-medium tracking-[-0.01em] [font-stretch:88%] [overflow-wrap:anywhere]"
         >
           <span className="k mb-2 block">Contact</span>
           {EMAIL}
@@ -68,40 +68,50 @@ export function TitleBlock() {
         </button>
       </div>
 
-      <a
-        className={LINK}
-        href="https://www.linkedin.com/in/alexis-benoliel-a679a7108"
-        target="_blank"
-        rel="noopener"
-      >
-        LinkedIn ↗
-      </a>
-      <a
-        className={LINK}
-        href="/cv-alexis-benoliel-en.pdf"
-        target="_blank"
-        rel="noopener"
-        data-label="RESUME · PDF"
-      >
-        Resume ↗
-      </a>
-      <a
-        className={LINK}
-        href="/cv-alexis-benoliel.pdf"
-        target="_blank"
-        rel="noopener"
-        data-label="CV FR · PDF"
-      >
-        CV (FR) ↗
-      </a>
-      <div className="px-4 py-[14px] font-mono text-[13px]">
-        <span className="k block">Rev</span>E · 2026
+      <div className="col-span-full -mb-px grid grid-cols-[repeat(auto-fit,minmax(118px,1fr))]">
+        <a
+          className={LINK}
+          href="https://www.linkedin.com/in/alexis-benoliel-a679a7108"
+          target="_blank"
+          rel="noopener"
+        >
+          LinkedIn ↗
+        </a>
+        <a
+          className={LINK}
+          href="https://github.com/alexbeno"
+          target="_blank"
+          rel="noopener"
+        >
+          GitHub ↗
+        </a>
+        <a
+          className={LINK}
+          href="/cv-alexis-benoliel-en.pdf"
+          target="_blank"
+          rel="noopener"
+          data-label="RESUME · PDF"
+        >
+          Resume ↗
+        </a>
+        <a
+          className={LINK}
+          href="/cv-alexis-benoliel.pdf"
+          target="_blank"
+          rel="noopener"
+          data-label="CV FR · PDF"
+        >
+          CV (FR) ↗
+        </a>
+        <div className="border-b border-ink px-4 py-[14px] font-mono text-[13px]">
+          <span className="k block">Rev</span>H · 2026
+        </div>
       </div>
 
       {isCopied ? (
         <div
           aria-live="polite"
-          className="stamp pointer-events-none absolute top-[14px] right-7 border-[3px] border-red bg-paper px-[14px] py-2 font-mono text-[18px] font-medium tracking-[.12em] text-red"
+          className="stamp pointer-events-none absolute top-[14px] right-7 border-[3px] border-accent bg-paper px-[14px] py-2 font-mono text-[18px] font-medium tracking-[.12em] text-accent"
         >
           COPIED ✓ APPROVED
         </div>

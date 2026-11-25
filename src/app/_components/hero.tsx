@@ -1,6 +1,6 @@
 import { Revisions } from "./revisions";
 
-const SECTION_LETTER = "fade font-mono text-[15px] font-medium text-red";
+const SECTION_LETTER = "fade font-mono text-[15px] font-medium text-accent";
 
 /** Horizontal dimension line above the name: "7 yrs · 2017 → 2026". */
 function YearsDimension() {
@@ -66,9 +66,9 @@ function SectionLine() {
         viewBox="0 0 34 28"
         aria-hidden="true"
       >
-        <path d="M0 2H32" className="stroke-red" strokeWidth="3.5" />
-        <path d="M16 4V22" className="stroke-red" strokeWidth="1.5" />
-        <path d="M16 28L11.5 18H20.5Z" className="fill-red" />
+        <path d="M0 2H32" className="stroke-accent" strokeWidth="3.5" />
+        <path d="M16 4V22" className="stroke-accent" strokeWidth="1.5" />
+        <path d="M16 28L11.5 18H20.5Z" className="fill-accent" />
       </svg>
       <span className="cut cutd mt-[1.2px] flex-1 self-start" />
       <svg
@@ -78,9 +78,9 @@ function SectionLine() {
         viewBox="0 0 34 28"
         aria-hidden="true"
       >
-        <path d="M2 2H34" className="stroke-red" strokeWidth="3.5" />
-        <path d="M18 4V22" className="stroke-red" strokeWidth="1.5" />
-        <path d="M18 28L13.5 18H22.5Z" className="fill-red" />
+        <path d="M2 2H34" className="stroke-accent" strokeWidth="3.5" />
+        <path d="M18 4V22" className="stroke-accent" strokeWidth="1.5" />
+        <path d="M18 28L13.5 18H22.5Z" className="fill-accent" />
       </svg>
       <span className={`${SECTION_LETTER} pl-[10px]`}>A</span>
     </div>
@@ -128,10 +128,10 @@ export function Hero() {
 
         <p
           data-snap="NOTE · CATCHLINE"
-          className="mt-[clamp(24px,3vw,36px)] max-w-[860px] font-serif text-[clamp(34px,4.2vw,60px)] leading-[1.02] tracking-[-0.01em]"
+          className="mt-[clamp(24px,3vw,36px)] max-w-[860px] font-display text-[clamp(26px,3.2vw,46px)] leading-[1.08] font-medium tracking-[-0.01em] [font-stretch:88%]"
         >
           Interfaces that hold,{" "}
-          <em className="text-red">between people and AI.</em>
+          <span className="mark">between people and AI.</span>
         </p>
       </div>
 

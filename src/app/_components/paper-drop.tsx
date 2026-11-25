@@ -36,6 +36,7 @@ function measure(
       ruled.offsetWidth,
       ruled.offsetHeight,
     ],
+    frameBorder: parseFloat(getComputedStyle(ruled).borderTopWidth) || 0,
     meshHeight: Math.min(sheet.offsetHeight, Math.max(visible, BELOW_FOLD)),
   };
 }

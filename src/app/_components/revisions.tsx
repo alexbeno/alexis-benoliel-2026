@@ -91,7 +91,7 @@ export function Revisions() {
             className={`rev ${ROW} ${isCurrent ? "" : "border-b border-rule"}`}
           >
             <span
-              className={`rl py-[7px] pl-4 font-mono ${isCurrent ? "text-red" : ""}`}
+              className={`rl py-[7px] pl-4 font-mono ${isCurrent ? "text-accent" : ""}`}
             >
               {revision.letter}
             </span>

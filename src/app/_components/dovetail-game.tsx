@@ -290,7 +290,7 @@ export function DovetailGame() {
               y1="0"
               x2="0"
               y2="7"
-              className="stroke-red"
+              className="stroke-accent"
               strokeWidth="1.3"
             />
           </pattern>
@@ -328,7 +328,7 @@ export function DovetailGame() {
         <path
           d={PART_2_SEATED}
           fill="none"
-          className="stroke-red [transition:opacity_.3s]"
+          className="stroke-accent [transition:opacity_.3s]"
           strokeWidth="1"
           strokeDasharray="3 4"
           style={{ opacity: state.isDragging ? 0.9 : 0 }}
@@ -402,7 +402,7 @@ export function DovetailGame() {
           <path className="fillin" d={PART_2} fill="url(#part-hatch)" />
           <path d={PART_2} fill="transparent" />
           <path
-            className="draw stroke-red"
+            className="draw stroke-accent"
             pathLength="1"
             d={PART_2}
             fill="none"
@@ -451,7 +451,7 @@ export function DovetailGame() {
             y="304"
             fontSize="11"
             letterSpacing="1"
-            className="fill-red font-mono"
+            className="fill-accent font-mono"
           >
             2 · MACHINE
           </text>
@@ -483,7 +483,7 @@ export function DovetailGame() {
           textAnchor="middle"
           fontSize="12"
           letterSpacing="1.5"
-          className="fill-red font-mono [transition:opacity_.3s_.5s]"
+          className="fill-accent font-mono [transition:opacity_.3s_.5s]"
           style={{ opacity: state.isAssembled ? 1 : 0 }}
         >
           ✓ NO GLUE REQUIRED
@@ -493,7 +493,7 @@ export function DovetailGame() {
             {DUST.map((speck, index) => (
               <circle
                 key={speck.cy}
-                className={`dust ${index % 2 === 0 ? "fill-red" : "fill-ink"}`}
+                className={`dust ${index % 2 === 0 ? "fill-accent" : "fill-ink"}`}
                 cx={speck.cx}
                 cy={speck.cy}
                 r={speck.r}
@@ -514,7 +514,7 @@ export function DovetailGame() {
           {buttonLabel}
         </button>
         <div className="flex flex-col gap-[2px]">
-          <span className={`k ${state.isMiss ? "text-red" : ""}`}>
+          <span className={`k ${state.isMiss ? "text-accent" : ""}`}>
             {getStatus(state)}
           </span>
           <span className="k">{getBestLine(state)}</span>
@@ -524,7 +524,7 @@ export function DovetailGame() {
       {state.hasFitStamp ? (
         <div
           aria-live="polite"
-          className="stamp pointer-events-none absolute top-10 right-6 border-[3px] border-red bg-paper px-[14px] py-2 font-mono text-[16px] font-medium tracking-[.1em] whitespace-nowrap text-red"
+          className="stamp pointer-events-none absolute top-10 right-6 border-[3px] border-accent bg-paper px-[14px] py-2 font-mono text-[16px] font-medium tracking-[.1em] whitespace-nowrap text-accent"
         >
           {state.stampText}
         </div>
