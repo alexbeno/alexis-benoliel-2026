@@ -3,7 +3,9 @@
 import { useEffect, useRef } from "react";
 import {
   DROP_DURATION,
+  ENTRY_LAID_DOWN,
   createPaperRenderer,
+  getEntryFromBelow,
   getSheetPose,
   type PaperFrame,
 } from "../_utils/paper-gl";
@@ -13,6 +15,8 @@ const MAX_PIXEL_RATIO = 2;
 /** Meshed past the bottom of the screen, so the cut is never seen. */
 const BELOW_FOLD = 320;
 const FADE_OUT_MS = 180;
+/** Same breakpoint as `sheet:` in globals.css: below it, the mobile layout. */
+const DESKTOP = "(min-width: 56.3125rem)";
 
 /**
  * Measures where the real sheet rests, so the WebGL one lands exactly on it.
@@ -38,6 +42,9 @@ function measure(
     ],
     frameBorder: parseFloat(getComputedStyle(ruled).borderTopWidth) || 0,
     meshHeight: Math.min(sheet.offsetHeight, Math.max(visible, BELOW_FOLD)),
+    entry: window.matchMedia(DESKTOP).matches
+      ? ENTRY_LAID_DOWN
+      : getEntryFromBelow(window.innerHeight),
   };
 }
 
