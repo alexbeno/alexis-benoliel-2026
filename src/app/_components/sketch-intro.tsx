@@ -41,7 +41,7 @@ export function SketchIntro({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <div ref={frameRef} className="relative">
+    <div ref={frameRef} className="frame-trace relative">
       <div className="sketch">{children}</div>
       <div aria-hidden="true" className="sketch-flash" />
     </div>

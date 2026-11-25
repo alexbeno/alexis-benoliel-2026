@@ -6,7 +6,9 @@ import { getRevealDelay } from "../_utils/reveal";
 const EMAIL = "alexbenoliel@gmail.com";
 const STAMP_DURATION_MS = 2400;
 const CELL = "border-b border-ink px-4 py-3";
-const LINK = "ul border-r border-b border-ink px-4 py-[14px] font-semibold";
+/** On mobile the links sit two per row, so the right-hand one has no rule. */
+const LINK =
+  "ul border-r border-b border-ink px-4 py-[14px] font-semibold max-sheet:even:border-r-0";
 
 export function TitleBlock() {
   const [isCopied, setIsCopied] = useState(false);
@@ -68,7 +70,7 @@ export function TitleBlock() {
         </button>
       </div>
 
-      <div className="col-span-full -mb-px grid grid-cols-[repeat(auto-fit,minmax(118px,1fr))]">
+      <div className="col-span-full -mb-px grid grid-cols-2 sheet:grid-cols-5">
         <a
           className={LINK}
           href="https://www.linkedin.com/in/alexis-benoliel-a679a7108"
@@ -103,7 +105,7 @@ export function TitleBlock() {
         >
           CV (FR) ↗
         </a>
-        <div className="border-b border-ink px-4 py-[14px] font-mono text-[13px]">
+        <div className="border-b border-ink px-4 py-[14px] font-mono text-[13px] max-sheet:col-span-2">
           <span className="k block">Rev</span>H · 2026
         </div>
       </div>
