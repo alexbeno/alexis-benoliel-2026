@@ -3,9 +3,7 @@
 import { useEffect, useRef } from "react";
 import {
   DROP_DURATION,
-  ENTRY_LAID_DOWN,
   createPaperRenderer,
-  getEntryFromBelow,
   getSheetPose,
   type PaperFrame,
 } from "../_utils/paper-gl";
@@ -42,9 +40,6 @@ function measure(
     ],
     frameBorder: parseFloat(getComputedStyle(ruled).borderTopWidth) || 0,
     meshHeight: Math.min(sheet.offsetHeight, Math.max(visible, BELOW_FOLD)),
-    entry: window.matchMedia(DESKTOP).matches
-      ? ENTRY_LAID_DOWN
-      : getEntryFromBelow(window.innerHeight),
   };
 }
 
@@ -64,6 +59,7 @@ function follow(sheet: HTMLElement, frame: PaperFrame) {
  * WebGL sheet is flat, then
  * takes over when `data-intro` switches on the sheet root (the states are
  * listed in globals.css). Without WebGL2 the CSS version of the drop plays.
+ * On mobile nothing is laid down: the sheet is there and only gets drawn on.
  */
 export function PaperDrop() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -86,6 +82,12 @@ export function PaperDrop() {
     ).matches;
     if (prefersReducedMotion) {
       sheetRoot.dataset.intro = "done";
+      return;
+    }
+    // On mobile the sheet is already in place: only the drawing is projected.
+    if (!window.matchMedia(DESKTOP).matches) {
+      stage.style.display = "none";
+      sheetRoot.dataset.intro = "project";
       return;
     }
     const gl = stage.getContext("webgl2", { antialias: true, alpha: true });

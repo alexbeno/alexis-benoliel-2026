@@ -14,42 +14,10 @@ const MAX_LAG = 0.42;
 const RIPPLE = 0.16;
 const RIPPLE_SPEED = 7.5;
 const SAG = 0.22;
+const TWIST_DEGREES = -3.4;
 const TWIST_SPRING = [8, 0.5] as const;
-const DRIFT_RATE = 5.4;
-
-/** How the sheet as a whole comes in; the fall and the ripple are shared. */
-export interface PaperEntry {
-  /** Where it starts from, in px relative to where it rests. */
-  drift: [number, number];
-  /** Damping of that move: under 1 it overshoots a little, near 1 it does not. */
-  driftDamping: number;
-  /** How far it starts turned, in degrees. */
-  twist: number;
-  /**
-   * Which part touches down first. A point lands later by
-   * `x * across + y * down + base`, as a share of MAX_LAG, with x and y its
-   * position on the sheet from 0 to 1.
-   */
-  lag: { across: number; down: number; base: number };
-}
-
-/** Desktop: laid down from the top left, bottom-left corner first, askew. */
-export const ENTRY_LAID_DOWN: PaperEntry = {
-  drift: [-64, -96],
-  driftDamping: 0.7,
-  twist: -3.4,
-  lag: { across: 0.62, down: -0.38, base: 0.38 },
-};
-
-/** Mobile: slides straight up from below, top edge first, no twist. */
-export function getEntryFromBelow(viewportHeight: number): PaperEntry {
-  return {
-    drift: [0, Math.min(viewportHeight * 0.22, 180)],
-    driftDamping: 0.95,
-    twist: 0,
-    lag: { across: 0, down: 0.7, base: 0 },
-  };
-}
+const DRIFT = [-64, -96] as const;
+const DRIFT_SPRING = [5.4, 0.7] as const;
 
 /** Formats a number as a GLSL float literal. */
 function glsl(value: number) {
@@ -75,7 +43,6 @@ export interface PaperFrame {
   frameBorder: number;
   /** How much of the sheet's height is meshed (the part that can be seen). */
   meshHeight: number;
-  entry: PaperEntry;
 }
 
 /*
@@ -91,10 +58,6 @@ uniform vec2 uView;
 uniform vec4 uSheet;
 uniform float uMeshHeight;
 uniform float uTime;
-uniform vec2 uDrift;
-uniform float uDriftDamping;
-uniform float uTwist;
-uniform vec3 uLag;
 
 const float RELEASE_HEIGHT = ${glsl(RELEASE_HEIGHT)};
 const float CAMERA_HEIGHT = ${glsl(CAMERA_HEIGHT)};
@@ -113,7 +76,7 @@ float swing(float t, float w, float damping) {
 float lift(vec2 local) {
   vec2 q = local / vec2(uSheet.z, uMeshHeight);
   // Bottom-left touches first, top-right last.
-  float lag = ${glsl(MAX_LAG)} * (uLag.x * q.x + uLag.y * q.y + uLag.z);
+  float lag = ${glsl(MAX_LAG)} * (0.62 * q.x + 0.38 * (1.0 - q.y));
   float fall = settle(uTime - lag, ${glsl(FALL_RATE)});
   float ripple = sin(dot(q, vec2(5.2, 3.4)) - uTime * ${glsl(RIPPLE_SPEED)});
   float sag = sin(3.14159 * q.x) * 0.5;
@@ -122,8 +85,8 @@ float lift(vec2 local) {
 
 vec2 onDesk(vec2 local) {
   vec2 centre = vec2(uSheet.z, uMeshHeight) * 0.5;
-  float twist = radians(uTwist) * swing(uTime, ${glsl(TWIST_SPRING[0])}, ${glsl(TWIST_SPRING[1])});
-  vec2 drift = uDrift * swing(uTime, ${glsl(DRIFT_RATE)}, uDriftDamping);
+  float twist = radians(${glsl(TWIST_DEGREES)}) * swing(uTime, ${glsl(TWIST_SPRING[0])}, ${glsl(TWIST_SPRING[1])});
+  vec2 drift = vec2(${glsl(DRIFT[0])}, ${glsl(DRIFT[1])}) * swing(uTime, ${glsl(DRIFT_SPRING[0])}, ${glsl(DRIFT_SPRING[1])});
   vec2 p = local - centre;
   p = vec2(cos(twist) * p.x - sin(twist) * p.y, sin(twist) * p.x + cos(twist) * p.y);
   return uSheet.xy + centre + p + drift;
@@ -278,9 +241,8 @@ export interface SheetPose {
  * Lets the page drawn on the sheet ride along with it as a CSS transform.
  */
 export function getSheetPose(frame: PaperFrame): SheetPose {
-  const { time, view, sheet, meshHeight, entry } = frame;
-  const lag =
-    MAX_LAG * (0.5 * entry.lag.across + 0.5 * entry.lag.down + entry.lag.base);
+  const { time, view, sheet, meshHeight } = frame;
+  const lag = MAX_LAG * 0.5;
   const ripple = Math.sin(0.5 * (5.2 + 3.4) - time * RIPPLE_SPEED);
   const lift =
     RELEASE_HEIGHT *
@@ -288,10 +250,10 @@ export function getSheetPose(frame: PaperFrame): SheetPose {
     (1 + RIPPLE * ripple - SAG * 0.5);
   const scale = CAMERA_HEIGHT / (CAMERA_HEIGHT - lift);
   const origin: [number, number] = [sheet[2] / 2, meshHeight / 2];
-  const drift = swing(time, DRIFT_RATE, entry.driftDamping);
+  const drift = swing(time, ...DRIFT_SPRING);
   // Centre of the sheet on the desk, then pushed out from the screen centre.
-  const deskX = sheet[0] + origin[0] + entry.drift[0] * drift;
-  const deskY = sheet[1] + origin[1] + entry.drift[1] * drift;
+  const deskX = sheet[0] + origin[0] + DRIFT[0] * drift;
+  const deskY = sheet[1] + origin[1] + DRIFT[1] * drift;
   return {
     origin,
     translate: [
@@ -299,7 +261,7 @@ export function getSheetPose(frame: PaperFrame): SheetPose {
       view[1] / 2 + (deskY - view[1] / 2) * scale - (sheet[1] + origin[1]),
     ],
     scale,
-    degrees: entry.twist * swing(time, ...TWIST_SPRING),
+    degrees: TWIST_DEGREES * swing(time, ...TWIST_SPRING),
   };
 }
 
@@ -396,19 +358,6 @@ export function createPaperRenderer(gl: WebGL2RenderingContext) {
       frame.meshHeight,
     );
     gl.uniform1f(gl.getUniformLocation(program, "uTime"), frame.time);
-    const { drift, driftDamping, twist, lag } = frame.entry;
-    gl.uniform1f(
-      gl.getUniformLocation(program, "uDriftDamping"),
-      driftDamping,
-    );
-    gl.uniform2f(gl.getUniformLocation(program, "uDrift"), ...drift);
-    gl.uniform1f(gl.getUniformLocation(program, "uTwist"), twist);
-    gl.uniform3f(
-      gl.getUniformLocation(program, "uLag"),
-      lag.across,
-      lag.down,
-      lag.base,
-    );
     gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 
