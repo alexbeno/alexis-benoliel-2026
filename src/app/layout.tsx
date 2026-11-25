@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import {
   Archivo,
   IBM_Plex_Mono,
-  Instrument_Sans,
-  Instrument_Serif,
+  IBM_Plex_Sans,
 } from "next/font/google";
 import "./globals.css";
 
@@ -13,16 +12,10 @@ const archivo = Archivo({
   axes: ["wdth"],
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-plex-sans",
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-});
-
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 const plexMono = IBM_Plex_Mono({
@@ -41,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${instrumentSerif.variable} ${instrumentSans.variable} ${plexMono.variable}`}
+      className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
       <body className="bg-desk">{children}</body>
     </html>

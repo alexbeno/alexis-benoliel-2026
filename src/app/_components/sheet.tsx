@@ -101,7 +101,7 @@ export function Sheet({ children }: PropsWithChildren) {
       >
         <PaperDrop />
         <div
-          className="sheet-drop relative mx-auto box-content max-w-[1384px] border-2 border-ink bg-paper p-[26px] [transition:transform_.5s_cubic-bezier(.3,1.5,.5,1)]"
+          className="sheet-drop relative mx-auto box-content max-w-[1384px] border-2 border-ink bg-paper sheet:p-[26px] [transition:transform_.5s_cubic-bezier(.3,1.5,.5,1)]"
           style={{ transform: isScaled ? "scale(.93) rotate(-.8deg)" : "none" }}
         >
           <div className={`${ZONE} top-[6px] right-[26px] left-[26px]`}>
@@ -121,7 +121,7 @@ export function Sheet({ children }: PropsWithChildren) {
             <ZoneLabels zones={ZONE_ROWS} />
           </div>
 
-          <div className="grid-paper border-[1.5px] border-ink">
+          <div className="grid-paper border-ink sheet:border-[1.5px]">
             <SketchIntro>{children}</SketchIntro>
           </div>
         </div>

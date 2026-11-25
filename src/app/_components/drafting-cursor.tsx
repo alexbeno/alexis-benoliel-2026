@@ -4,7 +4,7 @@ import { useEffect, useRef, type RefObject } from "react";
 import { getCoordinateReadout, getLinkLabel, pxToMm } from "../_utils/cursor";
 
 const INK = "var(--color-ink)";
-const RED = "var(--color-red)";
+const RED = "var(--color-accent)";
 const CORNER = "absolute box-content size-[10px] border-current";
 
 interface DraftingCursorProps {
@@ -134,11 +134,11 @@ export function DraftingCursor({ rootRef }: DraftingCursorProps) {
     >
       <div
         ref={hRef}
-        className="absolute top-0 right-0 left-0 h-px bg-red/28"
+        className="absolute top-0 right-0 left-0 h-px bg-accent/28"
       />
       <div
         ref={vRef}
-        className="absolute top-0 bottom-0 left-0 w-px bg-red/28"
+        className="absolute top-0 bottom-0 left-0 w-px bg-accent/28"
       />
       <div
         ref={reticleRef}
@@ -157,7 +157,7 @@ export function DraftingCursor({ rootRef }: DraftingCursorProps) {
       </div>
       <div
         ref={boxRef}
-        className="absolute top-0 left-0 size-0 text-red opacity-0 [transition:transform_.2s_cubic-bezier(.3,1.4,.5,1),width_.2s,height_.2s,opacity_.15s]"
+        className="absolute top-0 left-0 size-0 text-accent opacity-0 [transition:transform_.2s_cubic-bezier(.3,1.4,.5,1),width_.2s,height_.2s,opacity_.15s]"
       >
         <span className={`${CORNER} top-0 left-0 border-t-2 border-l-2`} />
         <span className={`${CORNER} top-0 right-0 border-t-2 border-r-2`} />

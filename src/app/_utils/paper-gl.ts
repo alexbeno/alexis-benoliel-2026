@@ -39,6 +39,8 @@ export interface PaperFrame {
   sheet: Box;
   /** The ruled frame inside the sheet, relative to the sheet's corner. */
   frame: Box;
+  /** Width of the ruled frame's own border; 0 when it has none (mobile). */
+  frameBorder: number;
   /** How much of the sheet's height is meshed (the part that can be seen). */
   meshHeight: number;
 }
@@ -131,10 +133,12 @@ in float vShade;
 out vec4 outColor;
 uniform vec4 uSheet;
 uniform vec4 uFrame;
+uniform float uFrameBorder;
 uniform float uTime;
 
-const vec3 PAPER = vec3(251.0, 244.0, 233.0) / 255.0;
-const vec3 INK = vec3(26.0) / 255.0;
+const vec3 PAPER = vec3(246.0, 247.0, 244.0) / 255.0;
+const vec3 INK = vec3(21.0, 24.0, 28.0) / 255.0;
+const vec3 RULING = INK;
 
 float edgeDistance(vec2 p, vec2 size) {
   return min(min(p.x, p.y), min(size.x - p.x, size.y - p.y));
@@ -152,15 +156,17 @@ void main() {
 
   vec2 f = vLocal - uFrame.xy;
   float inFrame = edgeDistance(f, uFrame.zw);
-  if (inFrame >= 1.5) {
-    vec2 g = f - 1.5;
-    color = mix(color, INK, 0.035 * ruled(g.x, 12.0, pixel));
-    color = mix(color, INK, 0.035 * ruled(g.y, 12.0, pixel));
-    color = mix(color, INK, 0.075 * ruled(g.x, 48.0, pixel));
-    color = mix(color, INK, 0.075 * ruled(g.y, 48.0, pixel));
+  if (inFrame >= uFrameBorder) {
+    // Same one-pixel head start as the CSS ruling (background-position).
+    vec2 g = f - uFrameBorder + 1.0;
+    color = mix(color, RULING, 0.035 * ruled(g.x, 12.0, pixel));
+    color = mix(color, RULING, 0.035 * ruled(g.y, 12.0, pixel));
+    color = mix(color, RULING, 0.08 * ruled(g.x, 48.0, pixel));
+    color = mix(color, RULING, 0.08 * ruled(g.y, 48.0, pixel));
   }
   float frameLine = clamp(inFrame / pixel + 0.5, 0.0, 1.0)
-    * clamp((1.5 - inFrame) / pixel + 0.5, 0.0, 1.0);
+    * clamp((uFrameBorder - inFrame) / pixel + 0.5, 0.0, 1.0)
+    * step(0.01, uFrameBorder);
   color = mix(color, INK, frameLine);
 
   float outer = edgeDistance(vLocal, uSheet.zw);
@@ -343,6 +349,10 @@ export function createPaperRenderer(gl: WebGL2RenderingContext) {
     gl.uniform2f(gl.getUniformLocation(program, "uView"), ...frame.view);
     gl.uniform4f(gl.getUniformLocation(program, "uSheet"), ...frame.sheet);
     gl.uniform4f(gl.getUniformLocation(program, "uFrame"), ...frame.frame);
+    gl.uniform1f(
+      gl.getUniformLocation(program, "uFrameBorder"),
+      frame.frameBorder,
+    );
     gl.uniform1f(
       gl.getUniformLocation(program, "uMeshHeight"),
       frame.meshHeight,

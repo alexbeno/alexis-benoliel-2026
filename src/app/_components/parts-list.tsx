@@ -50,6 +50,8 @@ const PARTS: Part[] = [
 ];
 
 const HEAD = "border-b border-ink font-normal";
+/** On mobile each row stacks: item number in a gutter, name, then text. */
+const STACKED = "max-sheet:grid max-sheet:grid-cols-[82px_minmax(0,1fr)]";
 
 export function PartsList() {
   return (
@@ -58,30 +60,32 @@ export function PartsList() {
       style={getRevealDelay(0.15)}
       className="col-span-full overflow-x-auto border-ink bg-paper sheet:col-span-7 sheet:border-l-[1.5px]"
     >
-      <table className="w-full min-w-[480px] border-collapse text-[16px]">
-        <thead>
-          <tr className="k text-left">
+      <table className="w-full border-collapse text-[16px] max-sheet:block">
+        <thead className="max-sheet:block">
+          <tr className={`k text-left ${STACKED}`}>
             <th className={`${HEAD} box-content w-14 py-3 pr-2 pl-[18px]`}>
               Item
             </th>
             <th className={`${HEAD} w-[24%] p-3`}>Part</th>
-            <th className={`${HEAD} py-3 pr-5 pl-3`}>Description · Material</th>
+            <th className={`${HEAD} py-3 pr-5 pl-3 max-sheet:hidden`}>
+              Description · Material
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="max-sheet:block">
           {PARTS.map((part, index) => (
             <tr
               key={part.item}
               data-snap={part.snap}
-              className={`pt ${index > 0 ? "border-t border-rule" : ""}`}
+              className={`pt ${STACKED} ${index > 0 ? "border-t border-rule" : ""}`}
             >
-              <td className="py-[18px] pr-2 pl-[14px] align-top font-mono leading-6 text-red">
+              <td className="py-[18px] pr-2 pl-[14px] align-top font-mono leading-6 text-accent max-sheet:row-span-2">
                 <span className="itm">{part.item}</span>
               </td>
-              <td className="px-3 py-[18px] align-top font-serif text-[27px] leading-6">
+              <td className="px-3 py-[18px] align-top font-display text-[21px] leading-6 font-semibold tracking-[-0.005em] [font-stretch:88%] max-sheet:pb-2">
                 {part.name}
               </td>
-              <td className="py-[18px] pr-5 pl-3 align-top leading-6">
+              <td className="py-[18px] pr-5 pl-3 align-top leading-6 max-sheet:col-start-2 max-sheet:pt-0">
                 {part.description}
                 <span className="mt-[6px] block font-mono text-[13px] text-grey">
                   {part.material}

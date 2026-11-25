@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-desk: #f0e9df;
-  --color-paper: #fbf4e9;
-  --color-ink: #1a1a1a;
-  --color-red: #c2402a;
-  --color-grey: #5f5d5a;
-  --color-rule: #cec8bf;
+  /* Light theme: cool graph paper, black ink and one orange pen. */
+  /* The desk is the paper's own hue, one step darker. */
+  --color-desk: #eaebe6;
+  --color-paper: #f6f7f4;
+  --color-ink: #15181c;
+  --color-accent: #e2500a;
+  --color-grey: #5b6068;
+  --color-rule: #cfd4d8;
 
   /* The sheet collapses to a single column at 900px and below. */
   --breakpoint-sheet: 56.3125rem;
 }
 
 @theme inline {
-  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
-  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-sans: var(--font-plex-sans), system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), monospace;
   --font-display: var(--font-archivo), system-ui, sans-serif;
 }
@@ -206,15 +207,16 @@
     1.0001,
     1
   );
-  --grid-major: rgba(26, 26, 26, 0.075);
-  --grid-minor: rgba(26, 26, 26, 0.035);
+  /* Ruled in faint ink, so the gridded area keeps the paper's own colour */
+  --grid-major: rgba(21, 24, 28, 0.08);
+  --grid-minor: rgba(21, 24, 28, 0.035);
 }
 
 [data-theme="blueprint"] {
   --color-desk: #0a1c2a;
   --color-paper: #10293b;
   --color-ink: #efe8da;
-  --color-red: #ff7a5c;
+  --color-accent: #ff7a5c;
   --color-grey: #a7b6c1;
   --color-rule: #2d4b60;
   --grid-major: rgba(239, 232, 218, 0.09);
@@ -225,31 +227,46 @@
 @property --color-ink {
   syntax: "<color>";
   inherits: true;
-  initial-value: #1a1a1a;
+  initial-value: #15181c;
 }
-@property --color-red {
+@property --color-accent {
   syntax: "<color>";
   inherits: true;
-  initial-value: #c2402a;
+  initial-value: #e2500a;
 }
 @property --color-grey {
   syntax: "<color>";
   inherits: true;
-  initial-value: #5f5d5a;
+  initial-value: #5b6068;
 }
 
 @layer base {
   ::selection {
-    background: var(--color-red);
+    background: var(--color-accent);
     color: var(--color-paper);
   }
 
   a:hover {
-    color: var(--color-red);
+    color: var(--color-accent);
   }
 }
 
 @layer components {
+  /*
+   * Emphasis in running text: section hatching under the words, the way a
+   * cut face is marked on a drawing, rather than colour or italics.
+   */
+  .mark {
+    background: repeating-linear-gradient(
+        -55deg,
+        var(--color-accent) 0 1.5px,
+        transparent 1.5px 6px
+      )
+      0 92% / 100% 0.36em no-repeat;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
   /* Small mono caption used for every label on the drawing. */
   .k {
     font-family: var(--font-mono);
@@ -271,6 +288,8 @@
       48px 48px,
       12px 12px,
       12px 12px;
+    /* Start one pixel early so that no ruled line sits on the frame border. */
+    background-position: -1px -1px;
   }
 
   /* Section cutting-plane line (long dash, short dash). */
@@ -278,9 +297,9 @@
     height: 1.5px;
     background: repeating-linear-gradient(
       90deg,
-      var(--color-red) 0 24px,
+      var(--color-accent) 0 24px,
       transparent 24px 29px,
-      var(--color-red) 29px 33px,
+      var(--color-accent) 29px 33px,
       transparent 33px 38px
     );
   }
@@ -398,7 +417,8 @@
     z-index: 30;
     pointer-events: none;
     opacity: 0;
-    backdrop-filter: invert(1) brightness(2.2) saturate(1.3);
+    /* Sepia first: it warms the cool paper, so the negative comes out blue. */
+    backdrop-filter: sepia(0.8) invert(1) brightness(2.4) saturate(1.5);
   }
 
   /* Scroll reveal: `.in` is added by <SketchIntro> the first time it is seen. */
@@ -420,7 +440,7 @@
     left: -28px;
     right: -12px;
     height: 1px;
-    background: var(--color-red);
+    background: var(--color-accent);
     opacity: 0.4;
   }
   .nm {
@@ -457,10 +477,10 @@
     transition: background 0.2s;
   }
   .rev:hover {
-    background: color-mix(in srgb, var(--color-red) 8%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
   }
   .rev:hover .rl {
-    color: var(--color-red);
+    color: var(--color-accent);
     font-weight: 500;
   }
 
@@ -469,7 +489,7 @@
     transition: background 0.2s;
   }
   tr.pt:hover {
-    background: color-mix(in srgb, var(--color-red) 6%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 6%, transparent);
   }
   .itm {
     box-sizing: content-box;
@@ -485,16 +505,16 @@
     transition: all 0.25s;
   }
   tr.pt:hover .itm {
-    border-color: var(--color-red);
-    background: var(--color-red);
+    border-color: var(--color-accent);
+    background: var(--color-accent);
     color: var(--color-paper);
     transform: rotate(-12deg) scale(1.1);
   }
 
   /* Underline that draws in on hover. */
   .ul {
-    background: linear-gradient(var(--color-red), var(--color-red)) 0 100% / 0
-      1.5px no-repeat;
+    background: linear-gradient(var(--color-accent), var(--color-accent)) 0
+      100% / 0 1.5px no-repeat;
     transition: background-size 0.3s;
   }
   .ul:hover {
@@ -531,8 +551,8 @@
     border-bottom: 1px dashed var(--color-grey);
   }
   .nb:hover {
-    color: var(--color-red);
-    border-bottom-color: var(--color-red);
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
   }
 }
 
@@ -543,13 +563,13 @@
 @keyframes sketch-tokens {
   0% {
     --color-ink: rgba(26, 26, 26, 0.24);
-    --color-red: rgba(26, 26, 26, 0.24);
+    --color-accent: rgba(26, 26, 26, 0.24);
     --color-grey: rgba(26, 26, 26, 0.18);
     animation-timing-function: ease-out;
   }
   63% {
     --color-ink: rgba(26, 26, 26, 0.38);
-    --color-red: rgba(26, 26, 26, 0.38);
+    --color-accent: rgba(26, 26, 26, 0.38);
     --color-grey: rgba(26, 26, 26, 0.28);
     animation-timing-function: ease-in-out;
   }
