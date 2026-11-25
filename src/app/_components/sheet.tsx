@@ -12,7 +12,6 @@ import {
   type PropsWithChildren,
 } from "react";
 import { DraftingCursor } from "./drafting-cursor";
-import { PaperDrop } from "./paper-drop";
 import { SketchIntro } from "./sketch-intro";
 
 interface SheetContextValue {
@@ -96,10 +95,8 @@ export function Sheet({ children }: PropsWithChildren) {
       <div
         ref={rootRef}
         data-theme={isBlueprint ? "blueprint" : undefined}
-        data-intro="pending"
         className={`min-h-screen overflow-x-clip bg-desk p-[clamp(10px,2vw,28px)] font-sans leading-[normal] text-ink [transition:background_.6s] ${hasFinePointer ? "cur-on" : ""}`}
       >
-        <PaperDrop />
         <div
           className="sheet-drop relative mx-auto box-content max-w-[1384px] border-2 border-ink bg-paper sheet:p-[26px] [transition:transform_.5s_cubic-bezier(.3,1.5,.5,1)]"
           style={{ transform: isScaled ? "scale(.93) rotate(-.8deg)" : "none" }}

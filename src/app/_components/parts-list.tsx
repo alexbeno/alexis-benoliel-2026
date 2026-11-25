@@ -66,7 +66,7 @@ export function PartsList() {
             <th className={`${HEAD} box-content w-14 py-3 pr-2 pl-[18px]`}>
               Item
             </th>
-            <th className={`${HEAD} w-[24%] p-3`}>Part</th>
+            <th className={`${HEAD} w-[24%] p-3 max-sheet:w-auto`}>Part</th>
             <th className={`${HEAD} py-3 pr-5 pl-3 max-sheet:hidden`}>
               Description · Material
             </th>

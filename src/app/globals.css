@@ -21,193 +21,10 @@
 }
 
 :root {
-  /* When the projection starts: right away, as the sheet comes down. */
-  --projection-start: 0.15s;
+  /* When the drawing starts: while the ruling is still being traced */
+  --content-start: 0.65s;
 
-  /*
-   * Easing curves sampled from a real damped spring (mass on a spring, from
-   * rest), so motion accelerates, overshoots and settles the way objects do.
-   * float: critically damped, no overshoot. soft: one faint overshoot.
-   * loose: under-damped, a few decaying swings.
-   */
-  --spring-float: linear(
-    0,
-    0.007,
-    0.0259,
-    0.0537,
-    0.0882,
-    0.1275,
-    0.1699,
-    0.2142,
-    0.2594,
-    0.3047,
-    0.3495,
-    0.3932,
-    0.4355,
-    0.4762,
-    0.5151,
-    0.552,
-    0.5868,
-    0.6196,
-    0.6504,
-    0.6791,
-    0.7059,
-    0.7308,
-    0.7538,
-    0.7752,
-    0.7949,
-    0.813,
-    0.8297,
-    0.8451,
-    0.8592,
-    0.8721,
-    0.8839,
-    0.8946,
-    0.9045,
-    0.9135,
-    0.9216,
-    0.9291,
-    0.9359,
-    0.942,
-    0.9476,
-    0.9527,
-    0.9573,
-    0.9615,
-    0.9652,
-    0.9687,
-    0.9718,
-    0.9746,
-    0.9771,
-    0.9794,
-    0.9814,
-    0.9833,
-    0.985,
-    0.9865,
-    0.9879,
-    0.9891,
-    0.9902,
-    0.9912,
-    1
-  );
-  --spring-soft: linear(
-    0,
-    0.0135,
-    0.0497,
-    0.1026,
-    0.1672,
-    0.2393,
-    0.3154,
-    0.3926,
-    0.4687,
-    0.5419,
-    0.611,
-    0.6751,
-    0.7337,
-    0.7863,
-    0.833,
-    0.8738,
-    0.9089,
-    0.9387,
-    0.9636,
-    0.984,
-    1.0004,
-    1.0132,
-    1.0228,
-    1.0297,
-    1.0344,
-    1.0371,
-    1.0383,
-    1.0382,
-    1.0372,
-    1.0354,
-    1.0331,
-    1.0304,
-    1.0275,
-    1.0246,
-    1.0216,
-    1.0188,
-    1.016,
-    1.0135,
-    1.0112,
-    1.009,
-    1.0071,
-    1.0055,
-    1.004,
-    1.0028,
-    1.0018,
-    1.0009,
-    1.0002,
-    0.9997,
-    0.9993,
-    0.999,
-    0.9987,
-    0.9986,
-    0.9985,
-    0.9985,
-    0.9986,
-    0.9986,
-    1
-  );
-  --spring-loose: linear(
-    0,
-    0.0395,
-    0.1433,
-    0.2894,
-    0.4575,
-    0.63,
-    0.7929,
-    0.9359,
-    1.0525,
-    1.1396,
-    1.1971,
-    1.227,
-    1.2332,
-    1.2203,
-    1.1936,
-    1.1579,
-    1.1181,
-    1.0781,
-    1.0408,
-    1.0086,
-    0.9828,
-    0.964,
-    0.9519,
-    0.9462,
-    0.9458,
-    0.9496,
-    0.9564,
-    0.965,
-    0.9744,
-    0.9837,
-    0.9922,
-    0.9994,
-    1.0051,
-    1.0092,
-    1.0116,
-    1.0127,
-    1.0125,
-    1.0115,
-    1.0098,
-    1.0077,
-    1.0055,
-    1.0034,
-    1.0014,
-    0.9998,
-    0.9986,
-    0.9977,
-    0.9972,
-    0.997,
-    0.9971,
-    0.9974,
-    0.9978,
-    0.9983,
-    0.9988,
-    0.9993,
-    0.9998,
-    1.0001,
-    1
-  );
-  /* Ruled in faint ink, so the gridded area keeps the paper's own colour */
+  /* Ruled in faint ink, so the gridded area keeps the paper's own colour. */
   --grid-major: rgba(21, 24, 28, 0.08);
   --grid-minor: rgba(21, 24, 28, 0.035);
 }
@@ -224,6 +41,16 @@
 }
 
 /* Registered as colours so the intro can animate them (see `.sketch`). */
+@property --grid-major {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(21, 24, 28, 0.08);
+}
+@property --grid-minor {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(21, 24, 28, 0.035);
+}
 @property --color-ink {
   syntax: "<color>";
   inherits: true;
@@ -276,20 +103,44 @@
     color: var(--color-grey);
   }
 
+  /*
+   * Graph paper. The ruling sits on two layers behind the content, one per
+   * direction, so the intro can draw the horizontal lines left to right and
+   * the vertical ones top to bottom.
+   */
   .grid-paper {
+    position: relative;
+    isolation: isolate;
     background-color: var(--color-paper);
-    background-image:
-      linear-gradient(var(--grid-major) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
-      linear-gradient(var(--grid-minor) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    /* The lines go down in dark pencil, then fade back to the faint ruling. */
+    animation:
+      frame-hold 1.02s step-end backwards,
+      rule-ink 2s ease-in-out backwards;
+  }
+  .grid-paper::before,
+  .grid-paper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-size:
       48px 48px,
-      48px 48px,
-      12px 12px,
       12px 12px;
     /* Start one pixel early so that no ruled line sits on the frame border. */
     background-position: -1px -1px;
+  }
+  .grid-paper::before {
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px);
+    animation: rule-across 1.05s cubic-bezier(0.45, 0, 0.2, 1) 0.2s backwards;
+  }
+  .grid-paper::after {
+    background-image:
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    animation: rule-down 1.05s cubic-bezier(0.45, 0, 0.2, 1) 0.38s backwards;
   }
 
   /* Section cutting-plane line (long dash, short dash). */
@@ -310,107 +161,60 @@
   }
 
   /*
-   * The intro is driven by `data-intro` on the sheet root (see paper-drop.tsx):
-   * - pending: server render; the sheet is hidden until the script decides
-   * - webgl: the blank sheet is being laid down on the WebGL canvas, behind
-   *   the page, while the drawing is already being projected on top (part 2).
-   *   The real sheet's own paper is see-through so the canvas one shows.
-   * - project: the sheet has landed; the real paper takes over from the canvas
-   *   (also where mobile starts: no sheet animation there, only the drawing)
-   * - css: no WebGL, so the sheet is put down in CSS instead (part 1)
-   * - done: reduced motion, nothing plays
+   * The two frames (the sheet's edge and the ruled area's border) are traced
+   * from the top left corner at the start of the intro. Each real border is
+   * held transparent meanwhile and a copy laid exactly over it is uncovered
+   * by a sliding mask; the copy then simply stays on top.
    */
-  [data-intro="pending"] .sheet-drop {
-    /* Failsafe: if the script never runs, show the finished sheet regardless. */
-    animation: intro-failsafe 3s step-end backwards;
+  .sheet-drop {
+    animation: frame-hold 0.9s step-end backwards;
   }
-  /* `!important` because these must beat the Tailwind utilities in place. */
-  [data-intro="webgl"] :is(.sheet-drop, .grid-paper) {
-    border-color: transparent !important;
-    background: none !important;
+  .sheet-drop::after,
+  .frame-trace::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: 40;
+    border: 2px solid var(--color-ink);
+    pointer-events: none;
+    animation: frame-trace 0.9s cubic-bezier(0.45, 0, 0.2, 1) backwards;
   }
-  /* The script moves the sheet every frame here; a transition would lag it. */
-  [data-intro="webgl"] .sheet-drop {
-    transition: none !important;
+  .frame-trace::after {
+    inset: -1.5px;
+    border-width: 1.5px;
+    animation-delay: 0.12s;
   }
-  [data-intro="webgl"],
-  [data-intro="project"] {
-    --projection-start: 0s;
+  /* On mobile the ruled area has no border of its own. */
+  @media (max-width: 56.3124rem) {
+    .frame-trace::after {
+      display: none;
+    }
   }
 
   /*
-   * Intro, part 1 (CSS fallback): the blank sheet is put down on the desk.
-   * Each axis is its own spring with its own weight, so they settle out of
-   * step: it sinks on its air cushion (no bounce), while the sideways drift
-   * and the twist swing a little past rest before dying out.
+   * Intro, played once on load, on a sheet that is already there.
+   * 1. The ruling is drawn (see `.grid-paper` above) while the blueprint
+   *    negative pulses softly over the sheet.
+   * 2. From --content-start, overlapping the ruling, the whole drawing is
+   *    laid in as one block, top
+   *    to bottom with a soft edge, in graphite that then develops into the
+   *    final colours.
    */
-  [data-intro="css"] .sheet-drop {
-    transform-origin: 50% 45vh;
-    animation:
-      drop-fall 1.1s var(--spring-float) backwards,
-      drop-drift 1.5s var(--spring-soft) backwards,
-      drop-twist 1.7s var(--spring-loose) backwards,
-      drop-in 0.3s ease-out backwards;
+  .sketch-flash {
+    /* Late enough that the pulse lands on drawn lines, never on bare paper. */
+    animation: sketch-flash 1.3s ease-in-out 0.75s backwards;
   }
-
-  /*
-   * Intro, part 2: the drawing is projected onto the sheet. The lamp warms
-   * up, then the whole sheet is drawn as a pencil sketch: every colour token
-   * is swapped for graphite that darkens as it is worked, and every block is
-   * shaded in at once, each along its own diagonal with a soft edge. Then the
-   * final colours develop out of the graphite while the blueprint negative
-   * pulses softly over the sheet.
-   */
-  :is([data-intro="css"], [data-intro="webgl"], [data-intro="project"]) {
-    /* Zone markers along the sheet margin come on with the projection. */
-    .fade {
-      animation: fd 0.5s ease var(--projection-start) backwards;
-    }
-    .sketch {
-      animation:
-        sketch-tokens 1.9s linear var(--projection-start) backwards,
-        sketch-lamp 0.7s linear var(--projection-start) backwards;
-    }
-    .sketch header,
-    .sketch section > * {
-      animation: sketch-draw var(--sk-time, 1.7s)
-        cubic-bezier(0.5, 0.05, 0.25, 1)
-        calc(var(--projection-start) + var(--sk-delay, 0s)) backwards;
-    }
-    .sketch-flash {
-      animation: sketch-flash 1.1s ease-in-out
-        calc(var(--projection-start) + 1.15s) backwards;
-    }
-    .nm {
-      animation: sketch-name 1.9s linear var(--projection-start) backwards;
-    }
+  /* Zone markers along the sheet margin come on with the drawing. */
+  .fade {
+    animation: fd 0.5s ease var(--content-start) backwards;
   }
   .sketch {
     /* Re-resolve the inherited text colour here, so it follows the tokens. */
     color: var(--color-ink);
-  }
-  .sketch header {
-    --sk-angle: 94deg;
-    --sk-time: 1.6s;
-  }
-  .sketch section > :first-child {
-    --sk-angle: 122deg;
-    --sk-time: 1.9s;
-    --sk-delay: 0.04s;
-  }
-  .sketch section > :last-child {
-    --sk-angle: 106deg;
-    --sk-time: 1.7s;
-    --sk-delay: 0.16s;
-  }
-  .sketch #parts > :first-child {
-    --sk-angle: 132deg;
-    --sk-time: 1.8s;
-    --sk-delay: 0.1s;
-  }
-  .sketch #contact > :last-child {
-    --sk-angle: 114deg;
-    --sk-delay: 0.08s;
+    animation:
+      sketch-tokens 1.7s linear var(--content-start) backwards,
+      sketch-draw 1.35s cubic-bezier(0.45, 0, 0.2, 1) var(--content-start)
+        backwards;
   }
   .sketch-flash {
     position: absolute;
@@ -419,7 +223,7 @@
     pointer-events: none;
     opacity: 0;
     /* Sepia first: it warms the cool paper, so the negative comes out blue. */
-    backdrop-filter: sepia(0.8) invert(1) brightness(2.4) saturate(1.5);
+    backdrop-filter: sepia(0.8) invert(1) brightness(1.6) saturate(1.1);
   }
 
   /* Scroll reveal: `.in` is added by <SketchIntro> the first time it is seen. */
@@ -448,6 +252,7 @@
     display: block;
     white-space: nowrap;
     -webkit-text-stroke: 1.2px transparent;
+    animation: sketch-name 1.7s linear var(--content-start) backwards;
   }
 
   /* Dovetail drawing. */
@@ -558,8 +363,59 @@
 }
 
 /*
- * Graphite gets darker as the sketch is worked (0 to 1.2s), then the final
- * colours develop out of it (1.2 to 1.9s), under the blueprint pulses.
+ * The ruling is traced by a hard-edged mask sliding across the screen. The
+ * edge is slightly tilted, so the lines do not all advance together: each
+ * one starts a little after its neighbour, as if drawn one by one. The mask
+ * is sized on the screen (vw/vh), not on the page, so the edge crosses what
+ * is visible.
+ */
+@keyframes rule-across {
+  from {
+    mask: linear-gradient(101deg, #000 49.8%, transparent 50.2%) -220vw -150vh /
+      400vw 400vh no-repeat;
+  }
+  to {
+    mask: linear-gradient(101deg, #000 49.8%, transparent 50.2%) -70vw -150vh /
+      400vw 400vh no-repeat;
+  }
+}
+@keyframes rule-down {
+  from {
+    mask: linear-gradient(171deg, #000 49.8%, transparent 50.2%) -150vw -220vh /
+      400vw 400vh no-repeat;
+  }
+  to {
+    mask: linear-gradient(171deg, #000 49.8%, transparent 50.2%) -150vw -70vh /
+      400vw 400vh no-repeat;
+  }
+}
+/* Keeps a real border invisible while its traced copy is still being drawn. */
+@keyframes frame-hold {
+  from {
+    border-color: transparent;
+  }
+}
+/* A diagonal edge leaving the top left corner uncovers the frame's copy. */
+@keyframes frame-trace {
+  from {
+    mask: linear-gradient(135deg, #000 49.8%, transparent 50.2%) -212vw -212vh /
+      400vw 400vh no-repeat;
+  }
+  to {
+    mask: linear-gradient(135deg, #000 49.8%, transparent 50.2%) -70vw -70vh /
+      400vw 400vh no-repeat;
+  }
+}
+@keyframes rule-ink {
+  0%,
+  42% {
+    --grid-major: rgba(21, 24, 28, 0.42);
+    --grid-minor: rgba(21, 24, 28, 0.17);
+  }
+}
+/*
+ * Graphite gets darker as the drawing is laid in (first 60%), then the final
+ * colours develop out of it.
  */
 @keyframes sketch-tokens {
   0% {
@@ -568,48 +424,11 @@
     --color-grey: rgba(26, 26, 26, 0.18);
     animation-timing-function: ease-out;
   }
-  63% {
+  60% {
     --color-ink: rgba(26, 26, 26, 0.38);
     --color-accent: rgba(26, 26, 26, 0.38);
     --color-grey: rgba(26, 26, 26, 0.28);
     animation-timing-function: ease-in-out;
-  }
-}
-/* A diagonal mask slides off each block, from top left to bottom right. */
-@keyframes intro-failsafe {
-  from {
-    opacity: 0;
-  }
-}
-@keyframes drop-fall {
-  from {
-    transform: perspective(1400px) translateY(-76px) rotateX(9deg) scale(1.1);
-    box-shadow: 0 90px 100px -30px rgba(26, 26, 26, 0.32);
-  }
-  to {
-    transform: perspective(1400px) translateY(0) rotateX(0deg) scale(1);
-    box-shadow: 0 0 0 0 rgba(26, 26, 26, 0);
-  }
-}
-@keyframes drop-drift {
-  from {
-    translate: -34px 0;
-  }
-  to {
-    translate: 0 0;
-  }
-}
-@keyframes drop-twist {
-  from {
-    rotate: -3.2deg;
-  }
-  to {
-    rotate: 0deg;
-  }
-}
-@keyframes drop-in {
-  from {
-    opacity: 0;
   }
 }
 @keyframes fd {
@@ -617,45 +436,28 @@
     opacity: 0;
   }
 }
-/* The projector lamp warming up: it swells, sags once, then holds steady. */
-@keyframes sketch-lamp {
-  0% {
-    opacity: 0.4;
-    animation-timing-function: ease-out;
-  }
-  38% {
-    opacity: 0.85;
-    animation-timing-function: ease-in-out;
-  }
-  58% {
-    opacity: 0.6;
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+/* One soft-edged mask slides down off the whole drawing. */
 @keyframes sketch-draw {
   from {
-    mask: linear-gradient(var(--sk-angle, 110deg), #000 48%, transparent 53%)
-      100% 100% / 260% 260% no-repeat;
+    mask: linear-gradient(to bottom, #000 44%, transparent 56%) 0 -150vh / 100%
+      260vh no-repeat;
   }
   to {
-    mask: linear-gradient(var(--sk-angle, 110deg), #000 48%, transparent 53%) 0%
-      0% / 260% 260% no-repeat;
+    mask: linear-gradient(to bottom, #000 44%, transparent 56%) 0 0 / 100% 260vh
+      no-repeat;
   }
 }
 /* The name stays an outline while sketched, then fills as colours develop. */
 @keyframes sketch-name {
   0%,
-  63% {
+  60% {
     color: transparent;
     -webkit-text-stroke-color: var(--color-ink);
     animation-timing-function: ease-in-out;
   }
 }
 /*
- * Two soft pulses of the blueprint negative while the colours develop: a
+ * Two soft pulses of the blueprint negative while the ruling is drawn: a
  * full one, then a fainter echo.
  */
 @keyframes sketch-flash {
@@ -705,7 +507,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition: none !important;
   }
