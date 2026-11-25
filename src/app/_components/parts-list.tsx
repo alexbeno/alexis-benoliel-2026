@@ -58,7 +58,7 @@ export function PartsList() {
     <div
       data-r
       style={getRevealDelay(0.15)}
-      className="col-span-full overflow-x-auto border-ink bg-paper sheet:col-span-7 sheet:border-l-[1.5px]"
+      className="col-span-full overflow-x-auto border-ink bg-paper sheet:col-span-7 max-sheet:border-t-[1.5px] sheet:border-l-[1.5px]"
     >
       <table className="w-full border-collapse text-[16px] max-sheet:block">
         <thead className="max-sheet:block">

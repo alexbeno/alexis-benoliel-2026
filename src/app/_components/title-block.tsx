@@ -32,7 +32,7 @@ export function TitleBlock() {
     <div
       data-r
       style={getRevealDelay(0.15)}
-      className="relative col-span-full grid grid-cols-4 border-ink bg-paper text-[15px] sheet:col-span-7 sheet:border-l-[1.5px]"
+      className="relative col-span-full grid grid-cols-4 border-ink bg-paper text-[15px] sheet:col-span-7 max-sheet:border-t-[1.5px] sheet:border-l-[1.5px]"
     >
       <div className={`${CELL} border-r max-sheet:col-span-2`}>
         <span className="k block">Drawn by</span>A. Benoliel
