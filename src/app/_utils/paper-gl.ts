@@ -44,7 +44,7 @@ export const ENTRY_LAID_DOWN: PaperEntry = {
 /** Mobile: slides straight up from below, top edge first, no twist. */
 export function getEntryFromBelow(viewportHeight: number): PaperEntry {
   return {
-    drift: [0, Math.min(viewportHeight * 0.5, 420)],
+    drift: [0, Math.min(viewportHeight * 0.22, 180)],
     driftDamping: 0.95,
     twist: 0,
     lag: { across: 0, down: 0.7, base: 0 },
